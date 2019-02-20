@@ -19,6 +19,8 @@ for i in range(len(a)+1):
             res.append(float(8*i)+float(10*j)+float(18*k))
 
 #print(res)
+
+#upload to github test
 res.sort()
 for i in range(len(res)):
     if res[i] in list_out:
