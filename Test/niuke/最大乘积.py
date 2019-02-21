@@ -21,6 +21,7 @@ for u in range(length):
 list_temp.sort()
 print(list_temp)
 res = 0
+#
 # for i in range(length):
 #     for k in range(length):
 #         if i == k:
