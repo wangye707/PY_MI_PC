@@ -17,7 +17,7 @@ length = len(list_temp)
 ###
 for u in range(length):
     list_temp[u] = int(list_temp[u])
-####
+#####
 list_temp.sort()
 print(list_temp)
 res = 0
