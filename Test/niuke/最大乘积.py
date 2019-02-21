@@ -14,7 +14,7 @@ while ' ' in list_temp:
 
 print(list_temp)
 length = len(list_temp)
-##
+###
 for u in range(length):
     list_temp[u] = int(list_temp[u])
 
