@@ -5,4 +5,7 @@
 # @Date  : 2019/2/19
 # @Software: PyCharm
 
-print(0.8+0.8+0.8)
+a=[1,10]
+b=a
+b[0]=10
+print(a)
