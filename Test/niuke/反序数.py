@@ -7,8 +7,6 @@
 
 back_num_str = []
 num_str = []
-#
-
 for i in range(1000,10000):
     back_num = i * 9
     res = 0
