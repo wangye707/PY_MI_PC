@@ -11,7 +11,7 @@ import paddle.fluid as fluid
 
 # train reader
 BATCH_SIZE = 20
-EPOCH_NUM = 30
+EPOCH_NUM = 300
 #BATCH_SIZE = 8
 
 train_reader = paddle.batch(
