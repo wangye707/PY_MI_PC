@@ -7,7 +7,7 @@
 
 print("韩龙飞是傻逼")
 
-from HanLong.xlsx_prepare import input_data_prepare
+from HanLong_oil.xlsx_prepare import input_data_prepare
 from sklearn import linear_model
 
 X = input_data_prepare()[0]
