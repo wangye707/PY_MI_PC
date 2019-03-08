@@ -6,16 +6,16 @@
 # @Software: PyCharm
 
 import matplotlib.pyplot as plt
-y1=[10,13,5,40,30,60,70,12,55,25]
-x1=range(0,10)
-x2=range(0,10)
-y2=[5,8,0,30,20,40,50,10,40,15]
-plt.plot(x1,y1,label='Frist line',linewidth=3,color='r',marker='o',
+y1=[664,422,399,468,690,702]
+x1=[4,6,8,10,15,20]
+x2=[4,6,8,10,15,20]
+y2=[660,660,660,660,660,660]
+plt.plot(x1,y1,label='new SSGD',linewidth=3,color='r',marker='o',
 markerfacecolor='blue',markersize=12)
-plt.plot(x2,y2,label='second line')
-plt.xlabel('Plot Number')
-plt.ylabel('Important var')
-plt.title('Interesting Graph\nCheck it out')
+plt.plot(x2,y2,label='SSGD')
+plt.xlabel('m')
+plt.ylabel('costing time')
+plt.title('new SSGD with SSGD costing time')
 plt.legend()
 plt.show()
 
