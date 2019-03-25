@@ -1,11 +1,11 @@
 import math
 import tensorflow as tf
-#from tensorflow.examples.tutorials.mnist import input_data
+from tensorflow.examples.tutorials.mnist import input_data
 import os
 import time
 #dsadasdasdasd
 flags = tf.app.flags
-flags.DEFINE_string("data_dir", r"/usr/wangye/mnist", "the directory of mnist_data")
+flags.DEFINE_string("data_dir", r"./MNIST_data", "the directory of mnist_data")
 #flags.DEFINE_integer("train_step",50000, "the step of train")
 flags.DEFINE_integer("batch_size", 1, "the number of batch")
 flags.DEFINE_integer("image_size", 28, "the size of image")
@@ -16,8 +16,8 @@ flags.DEFINE_float("learning_rate", 0.01, "the learning rate")
 flags.DEFINE_string("summary_dir", r"./temp/summary", "the directory of summary")
 flags.DEFINE_integer("task_index", 0, "the index of task")
 flags.DEFINE_string("job_name", "ps", "ps or worker")
-flags.DEFINE_string("ps_host", "192.168.1.124:22333", "the ip and port in ps host")
-flags.DEFINE_string("worker_host", "192.168.1.124:21333", "the ip and port in worker host")
+flags.DEFINE_string("ps_host", "localhost:22333", "the ip and port in ps host")
+flags.DEFINE_string("worker_host", "localhost:21333", "the ip and port in worker host")
 flags.DEFINE_string("cuda", "", "specify gpu")
 FLAGS = flags.FLAGS
 if FLAGS.cuda:

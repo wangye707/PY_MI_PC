@@ -17,12 +17,12 @@ FLAGS = tf.app.flags.FLAGS
 # For distributed
 tf.app.flags.DEFINE_string("ps_hosts","localhost:11111",
                            "Comma-separated list of hostname:port pairs")
-tf.app.flags.DEFINE_string("worker_hosts", "localhost:111112",
+tf.app.flags.DEFINE_string("worker_hosts", "localhost:111112,localhost:111113,localhost:111114",
                            "Comma-separated list of hostname:port pairs")
-tf.app.flags.DEFINE_string("job_name", "", "One of 'ps', 'worker'")
+tf.app.flags.DEFINE_string("job_name", "ps", "One of 'ps', 'worker'")
 tf.app.flags.DEFINE_integer("task_index", 0, "Index of task within the job")
-tf.app.flags.DEFINE_integer("issync", 0, "是否采用分布式的同步模式，1表示同步模式，0表示异步模式")
-tf.app.flags.DEFINE_string("cuda", "", "specify gpu")
+tf.app.flags.DEFINE_integer("issync", 1, "是否采用分布式的同步模式，1表示同步模式，0表示异步模式")
+tf.app.flags.DEFINE_string("cuda", "0", "specify gpu")
 #FLAGS = tf.app.flags.FLAGS
 if FLAGS.cuda:
     os.environ["CUDA_VISIBLE_DEVICES"] = FLAGS.cuda
@@ -78,6 +78,8 @@ def main(_):
         with tf.device(tf.train.replica_device_setter(
                 worker_device="/job:worker/task:%d" % FLAGS.task_index,
                 cluster=cluster)):
+            global_step = tf.Variable(0, name='global_step', trainable=False)
+            print("test")
             """
             第一层 卷积层
             
@@ -150,27 +152,83 @@ def main(_):
             ADAM优化器来做梯度最速下降,feed_dict中加入参数keep_prob控制dropout比例
             """
             y_ = tf.placeholder("float", [None, 10])
-            cross_entropy = -tf.reduce_sum(y_ * tf.log(y_conv)) #计算交叉熵
-            train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy) #使用adam优化器来以0.0001的学习率来进行微调
-            correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1)) #判断预测标签和实际标签是否匹配
-            accuracy = tf.reduce_mean(tf.cast(correct_prediction,"float"))
+            loss_value = -tf.reduce_sum(y_ * tf.log(y_conv))  # 计算交叉熵
+            optimizer = tf.train.GradientDescentOptimizer(0.10)  # 使用adam优化器来以0.0001的学习率来进行微调
+            correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))  # 判断预测标签和实际标签是否匹配
+            accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
 
-            sess = tf.Session() #启动创建的模型
-            sess.run(tf.initialize_all_variables()) #旧版本
-            #sess.run(tf.global_variables_initializer()) #初始化变量
+            # sess = tf.Session()  # 启动创建的模型
+            # sess.run(tf.initialize_all_variables())  # 旧版本
 
-            for i in range(50): #开始训练模型，循环训练5000次
-                batch = mnist.train.next_batch(50) #batch大小设置为50
-                if i % 10 == 0:
-                    train_accuracy = accuracy.eval(session = sess,
-                                                   feed_dict = {x:batch[0], y_:batch[1], keep_prob:1.0})
-                    print("step %d, train_accuracy %g" %(i, train_accuracy))
-                train_step.run(session = sess, feed_dict = {x:batch[0], y_:batch[1],
-                               keep_prob:0.5}) #神经元输出保持不变的概率 keep_prob 为0.5
 
-            print("test accuracy %g" %accuracy.eval(session = sess,
-                  feed_dict = {x:mnist.test.images, y_:mnist.test.labels,
-                               keep_prob:1.0})) #神经元输出保持不变的概率 keep_prob 为 1，即不变，一直保持输出
+            # sess.run(tf.global_variables_initializer()) #初始化变量
+            grads_and_vars = optimizer.compute_gradients(loss_value)
 
-            end = time.clock() #计算程序结束时间
-            print("running time is %g s") % (end-start)
+            if issync == 1:
+                # 同步模式计算更新梯度
+                rep_op = tf.train.SyncReplicasOptimizer(optimizer,
+                                                        replicas_to_aggregate=3,
+                                                        #                     replica_id=FLAGS.task_index,
+                                                        total_num_replicas=3,
+                                                        use_locking=True)
+                train_op = rep_op.apply_gradients(grads_and_vars,
+                                                  global_step=global_step)
+                init_token_op = rep_op.get_init_tokens_op()
+                chief_queue_runner = rep_op.get_chief_queue_runner()
+            else:
+                # 异步模式计算更新梯度
+                train_op = optimizer.apply_gradients(grads_and_vars,
+                                                     global_step=global_step)
+
+            init_op = tf.initialize_all_variables()
+
+            # saver = tf.train.Saver()
+            tf.summary.scalar('cost', loss_value)
+            summary_op = tf.summary.merge_all()
+
+        sv = tf.train.Supervisor(is_chief=(FLAGS.task_index == 0),
+                                 #  logdir="./checkpoint/",
+                                 init_op=init_op,
+                                 summary_op=None,
+                                 #  saver=saver,
+                                 global_step=global_step,
+                                 # save_model_secs=60
+                                 )
+
+        with sv.prepare_or_wait_for_session(server.target) as sess:
+            # 如果是同步模式
+            if FLAGS.task_index == 0 and issync == 1:
+                sv.start_queue_runners(sess, [chief_queue_runner])
+                sess.run(init_token_op)
+            step = 0
+
+            # with tf.Session() as sess:
+            #     tf.global_variables_initializer().run()
+
+            while step < 1000:  # 开始训练模型，循环训练5000次
+                batch = mnist.train.next_batch(200)  # batch大小设置为50
+                _, loss_v, step = sess.run([train_op, loss_value, global_step],
+                                           feed_dict={x: batch[0], y_: batch[1], keep_prob: 1.0})
+                # _loss, __ = sess.run([train_op, grads_and_vars],
+                #                      feed_dict={x: batch[0], y_: batch[1], keep_prob: 1.0})
+
+                if step % 100 == 0:
+                    acc, loss = sess.run([accuracy, loss_value],
+                                         feed_dict={x: batch[0], y_: batch[1], keep_prob: 1.0})
+                    # train_accuracy = accuracy.eval(session = sess,
+                    #                                feed_dict = {x:batch[0], y_:batch[1], keep_prob:1.0})
+                    print("step %d, train_accuracy %g" % (step, acc))
+                # train_step.run(session = sess, feed_dict = {x:batch[0], y_:batch[1],
+                #                keep_prob:0.5}) #神经元输出保持不变的概率 keep_prob 为0.5
+
+                # print("test accuracy %g" %accuracy.eval(session = sess,
+                #       feed_dict = {x:mnist.test.images, y_:mnist.test.labels,
+                #                    keep_prob:1.0})) #神经元输出保持不变的概率 keep_prob 为 1，即不变，一直保持输出
+
+            end = time.clock()  # 计算程序结束时间
+            out = (end - start)
+            print("running time is", out, "s")
+
+
+if __name__ == "__main__":
+    tf.app.run()

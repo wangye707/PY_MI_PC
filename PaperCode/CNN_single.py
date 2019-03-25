@@ -121,28 +121,34 @@ y_conv = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
 ADAM优化器来做梯度最速下降,feed_dict中加入参数keep_prob控制dropout比例
 """
 y_ = tf.placeholder("float", [None, 10])
-cross_entropy = -tf.reduce_sum(y_ * tf.log(y_conv)) #计算交叉熵
-train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy) #使用adam优化器来以0.0001的学习率来进行微调
+loss_value = -tf.reduce_sum(y_ * tf.log(y_conv)) #计算交叉熵
+optimizer = tf.train.GradientDescentOptimizer(0.0010) #使用adam优化器来以0.0001的学习率来进行微调
 correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1)) #判断预测标签和实际标签是否匹配
 accuracy = tf.reduce_mean(tf.cast(correct_prediction,"float"))
 
 sess = tf.Session() #启动创建的模型
 sess.run(tf.initialize_all_variables()) #旧版本
 #sess.run(tf.global_variables_initializer()) #初始化变量
+grads_and_vars = optimizer.compute_gradients(loss_value)
 
-for i in range(5000): #开始训练模型，循环训练5000次
-    batch = mnist.train.next_batch(50) #batch大小设置为50
-    if i % 100 == 0:
-        train_accuracy = accuracy.eval(session = sess,
-                                       feed_dict = {x:batch[0], y_:batch[1], keep_prob:1.0})
-        print("step %d, train_accuracy %g" %(i, train_accuracy))
-    train_step.run(session = sess, feed_dict = {x:batch[0], y_:batch[1],
-                   keep_prob:0.5}) #神经元输出保持不变的概率 keep_prob 为0.5
+with tf.Session() as sess:
+    tf.global_variables_initializer().run()
+    for i in range(5000): #开始训练模型，循环训练5000次
+        batch = mnist.train.next_batch(1000) #batch大小设置为50
+        _loss, __ = sess.run([loss_value, grads_and_vars], feed_dict={x:batch[0], y_:batch[1], keep_prob:1.0})
 
-print("test accuracy %g" %accuracy.eval(session = sess,
-      feed_dict = {x:mnist.test.images, y_:mnist.test.labels,
-                   keep_prob:1.0})) #神经元输出保持不变的概率 keep_prob 为 1，即不变，一直保持输出
+        if i % 100 == 0:
+            acc, loss = sess.run([accuracy, loss_value], feed_dict={x:batch[0], y_:batch[1], keep_prob:1.0})
+            # train_accuracy = accuracy.eval(session = sess,
+            #                                feed_dict = {x:batch[0], y_:batch[1], keep_prob:1.0})
+            print("step %d, train_accuracy %g" %(i, acc))
+        # train_step.run(session = sess, feed_dict = {x:batch[0], y_:batch[1],
+        #                keep_prob:0.5}) #神经元输出保持不变的概率 keep_prob 为0.5
 
-end = time.clock() #计算程序结束时间
-out = (end - start)
-print("running time is",out,"s")
+    # print("test accuracy %g" %accuracy.eval(session = sess,
+    #       feed_dict = {x:mnist.test.images, y_:mnist.test.labels,
+    #                    keep_prob:1.0})) #神经元输出保持不变的概率 keep_prob 为 1，即不变，一直保持输出
+
+    end = time.clock() #计算程序结束时间
+    out = (end - start)
+    print("running time is",out,"s")
