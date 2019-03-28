@@ -167,9 +167,9 @@ def main(_):
             if issync == 1:
                 # 同步模式计算更新梯度
                 rep_op = tf.train.SyncReplicasOptimizer(optimizer,
-                                                        replicas_to_aggregate=3,
+                                                        replicas_to_aggregate=5,
                                                         #                     replica_id=FLAGS.task_index,
-                                                        total_num_replicas=3,
+                                                        total_num_replicas=5,
                                                         use_locking=True)
                 train_op = rep_op.apply_gradients(grads_and_vars,
                                                   global_step=global_step)
@@ -206,7 +206,7 @@ def main(_):
             #     tf.global_variables_initializer().run()
 
             while step < 1000:  # 开始训练模型，循环训练5000次
-                batch = mnist.train.next_batch(200)  # batch大小设置为50
+                batch = mnist.train.next_batch(120)  # batch大小设置为50
                 _, loss_v, step = sess.run([train_op, loss_value, global_step],
                                            feed_dict={x: batch[0], y_: batch[1], keep_prob: 1.0})
                 # _loss, __ = sess.run([train_op, grads_and_vars],
