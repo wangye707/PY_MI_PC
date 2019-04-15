@@ -123,13 +123,14 @@ ADAM优化器来做梯度最速下降,feed_dict中加入参数keep_prob控制dro
 y_ = tf.placeholder("float", [None, 10])
 loss_value = -tf.reduce_sum(y_ * tf.log(y_conv)) #计算交叉熵
 optimizer = tf.train.GradientDescentOptimizer(0.0010) #使用adam优化器来以0.0001的学习率来进行微调
+optimizer1 = tf.train.AdamOptimizer()
 correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1)) #判断预测标签和实际标签是否匹配
 accuracy = tf.reduce_mean(tf.cast(correct_prediction,"float"))
 
 sess = tf.Session() #启动创建的模型
 sess.run(tf.initialize_all_variables()) #旧版本
 #sess.run(tf.global_variables_initializer()) #初始化变量
-grads_and_vars = optimizer.compute_gradients(loss_value)
+grads_and_vars = optimizer1.compute_gradients(loss_value)
 
 with tf.Session() as sess:
     tf.global_variables_initializer().run()
