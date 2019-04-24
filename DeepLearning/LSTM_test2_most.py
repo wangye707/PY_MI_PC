@@ -95,6 +95,7 @@ print(y.shape)
 Xtrain, Xtest, ytrain, ytest =\
     train_test_split(X, y, test_size=0.2, random_state=42)
                         #样本比例，如果是整数的话就是样本的数量
+print("1111111",type(Xtrain))
 ## 网络构建
 EMBEDDING_SIZE = 128
 HIDDEN_LAYER_SIZE = 64

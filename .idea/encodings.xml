@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="Encoding" addBOMForNewFiles="with NO BOM" />
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/work/Text_data/data/女性/1.txt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/work/Text_data/segResult/体育/1.txt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/work/Text_data/segResult/体育/8.txt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/work/Text_data/testSpace.txt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/work/Text_data/test_out_arr.txt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/work/Text_data/testspace_out_arr.txt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/work/Text_data/testspace_out_arr.txt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/work/Text_data/testspace_out_arr.txt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/work/Text_data/testspace_out_word.txt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/work/Text_data/testspace_out_word.txt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/work/Text_data/testspace_out_word.txt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/work/Text_data/tfidfspace.txt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/work/Text_data/tfidfspace.txt" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/work/Text_data/tfidfspace_out_word.txt" charset="GBK" />
+  </component>
 </project>

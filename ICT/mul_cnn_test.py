@@ -42,6 +42,7 @@ def conv2d(x, W):
     padding 有SAME和VALID两种选项，表示是否要保留不完全卷积的部分。如果是SAME，则保留
     use_cudnn_on_gpu 是否使用cudnn加速。默认是True
     """
+
     return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
 
 def max_pool_2x2(x):
@@ -112,5 +113,5 @@ for i in range(20000):
         print("step %d, training accuracy %g"%(i, train_accuracy))
     train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
 
-print("test accuracy %g"%accuracy.eval(feed_dict={
+    print("test accuracy %g"%accuracy.eval(feed_dict={
     x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))

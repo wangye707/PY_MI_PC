@@ -22,7 +22,8 @@ from keras import backend as K
 # 全局变量
 batch_size = 128
 nb_classes = 10
-epochs = 12
+# epochs = 12
+epochs = 1
 # input image dimensions
 img_rows, img_cols = 28, 28
 # number of convolutional filters to use

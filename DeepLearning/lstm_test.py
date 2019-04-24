@@ -65,3 +65,4 @@ for pattern in dataX:
     result = int_to_char[index]
     seq_in = [int_to_char[value] for value in pattern]
     print(seq_in, "->", result)
+

@@ -30,8 +30,8 @@ def saveFile(path, result):
 def segText(inputPath, resultPath):
     fatherLists = os.listdir(inputPath)  # 主目录
     for eachDir in fatherLists:  # 遍历主目录中各个文件夹
-        eachPath = inputPath + eachDir + "/"  # 保存主目录中每个文件夹目录，便于遍历二级文件
-        each_resultPath = resultPath + eachDir + "/"  # 分词结果文件存入的目录
+        eachPath = inputPath + '/' +eachDir + "/"  # 保存主目录中每个文件夹目录，便于遍历二级文件
+        each_resultPath = resultPath +'/'+ eachDir + "/"  # 分词结果文件存入的目录
         if not os.path.exists(each_resultPath):
             os.makedirs(each_resultPath)
         childLists = os.listdir(eachPath)  # 获取每个文件夹中的各个文件
@@ -127,13 +127,15 @@ def bayesAlgorithm(trainPath, testPath):
 
 
 # 分词，第一个是分词输入，第二个参数是结果保存的路径
-segText("C:/Users/wy/Desktop/data/", "C:/Users/wy/Desktop/segResult/")
-bunchSave("C:/Users/wy/Desktop/segResult/", "C:/Users/wy/Desktop/train_set.dat")  # 输入分词，输出分词向量
-stopWordList = getStopWord("C:/Users/wy/Desktop/stop/stop.txt")  # 获取停用词
-getTFIDFMat("C:/Users/wy/Desktop/train_set.dat", stopWordList, "C:/Users/wy/Desktop/tfidfspace.dat")  # 输入词向量，输出特征空间
+segText(r"D:/code/python/work/Text_data/data", r"D:/code/python/work/Text_data/segResult/")
+bunchSave("D:/code/python/work/Text_data/segResult/", "D:/code/python/work/Text_data/train_set.dat")  # 输入分词，输出分词向量
+stopWordList = getStopWord("D:/code/python/work/Text_data/stop/stopword.txt")  # 获取停用词
+getTFIDFMat("D:/code/python/work/Text_data/train_set.dat"
+            , stopWordList, "D:/code/python/work/Text_data/tfidfspace.dat")  # 输入词向量，输出特征空间
 
 # 训练集
-segText("C:/Users/wy/Desktop/test1/", "C:/Users/wy/Desktop/test_segResult/")  # 分词
-bunchSave("C:/Users/wy/Desktop/test_segResult/", "C:/Users/wy/Desktop/test_set.dat")
-getTestSpace("C:/Users/wy/Desktop/test_set.dat", "C:/Users/wy/Desktop/tfidfspace.dat", stopWordList, "C:/Users/wy/Desktop/testspace.dat")
-bayesAlgorithm("C:/Users/wy/Desktop/tfidfspace.dat", "C:/Users/wy/Desktop/testspace.dat")
+segText(r"D:/code/python/work/Text_data/test1/", r"D:/code/python/work/Text_data/data/test_segResult/")  # 分词
+bunchSave("D:/code/python/work/Text_data/test_segResult/", "D:/code/python/work/Text_data/test_set.dat")
+getTestSpace("D:/code/python/work/Text_data/test_set.dat", "D:/code/python/work/Text_data/tfidfspace.dat",
+             stopWordList, "D:/code/python/work/Text_data/testspace.dat")
+bayesAlgorithm("D:/code/python/work/Text_data/tfidfspace.dat", "D:/code/python/work/Text_data/testspace.dat")
