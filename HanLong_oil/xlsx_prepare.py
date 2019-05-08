@@ -7,7 +7,7 @@
 import numpy
 import xlrd
 
-path = r'D:\code\python\HanLong\NEW_DATA.xlsx'
+path = r'D:\code\python\HanLong_oil\NEW_DATA.xlsx'
 
 
 def open_xlrd(path):  #表格读取
