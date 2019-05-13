@@ -216,7 +216,7 @@ conv55 = con_wy(input=conv54,shape_weight=[1,1,512,2048],shape_bias=2048,strides
 
 
 #全链接
-reshape = tf.reshape(conv11, [batch_size, -1])  #分开成为
+reshape = tf.reshape(conv55, [batch_size, -1])  #分开成为
 dim = reshape.get_shape()[1].value       #
 weight3 = variable_with_weight_loss([dim, 384], stddev=0.04, w1=0.004)
 bias3 = tf.Variable(tf.constant(0.1, shape=[384]))

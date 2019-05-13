@@ -163,7 +163,7 @@ for step in range(max_steps):
     if step % 10 == 0:
         examples_per_sec = batch_size / duration
         sec_per_batch = float(duration)
-
+        print("2222222222",_)
         format_str = ('step %d,loss=%.2f (%.1f examples/sec;%.3f sec/batch)')
         print(format_str % (step, loss_value, examples_per_sec, sec_per_batch))
 

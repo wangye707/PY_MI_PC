@@ -13,7 +13,9 @@ import time
 max_steps = 3000
 batch_size = 1
 data = np.array(readData()[0])#(1028, 1750, 1000, 3)
-label = np.array(readData()[1])#(1028,250, 250, 3)
+label = [[10,10,5],[10,10,5],[10,10,5],[10,10,5],[10,10,5],[10,10,5],[10,10,5],[10,10,5],[10,10,5]]
+# label = np.array(readData()[1])#(1028,250, 250, 3)
+label = np.array(label)
 # print(data[8].shape)
 # print(data.shape)
 #切分训练集和测试集
@@ -49,7 +51,7 @@ def atrous_conv_wy(input,shape_weight,shape_bias,rate):
     return conv
 
 image_holder = tf.placeholder(tf.float32, [batch_size, 1750, 1000,1])
-label_holder = tf.placeholder(tf.float32, [batch_size,250*250])
+label_holder = tf.placeholder(tf.float32, [batch_size,None,None,None])
 
 
 
@@ -80,7 +82,7 @@ norm1 = tf.nn.lrn(pool1, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75)    #400*250*
 
 
 # print("norm1",norm1)
-print("label_holder",label_holder)
+
 norm0 = tf.reshape(norm1,[batch_size,-1])
 dim = norm0.get_shape()[1].value
 weight3 = weight_variable([dim, 250*250])
@@ -88,15 +90,19 @@ weight3 = weight_variable([dim, 250*250])
 bias3 = tf.Variable(tf.constant(0.1, shape=[250*250]))
 # local3 = tf.matmul(norm0,weight3)
 local3 = tf.matmul(norm0, weight3)+bias3
+print("local3",local3)
+print("label_holder",label_holder)
 #
+cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=local3, labels=label_holder,
+                                                                   name='cross_entropy_per_example')
 # print("local3",local3)#
-dis = tf.square(local3-label_holder)
-# print("dis",dis)#
-dis1 =tf.reduce_sum(dis)
-# print("dis1",dis1)
-loss = tf.sqrt(tf.sqrt(tf.reduce_sum(dis1)))
+# dis = tf.square(local3-label_holder)
+# # print("dis",dis)#
+# dis1 =tf.reduce_sum(dis)
+# # print("dis1",dis1)
+# loss = tf.sqrt(tf.sqrt(tf.reduce_sum(dis1)))
 
-opt = tf.train.AdamOptimizer(1e-4).compute_gradients(loss)
+opt = tf.train.AdamOptimizer(1e-4).compute_gradients(cross_entropy)
 #
 # print("euclidean",loss)
 
